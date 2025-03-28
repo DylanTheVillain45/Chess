@@ -11,8 +11,11 @@ public static class Board {
         { (PieceType.Queen, Color.Black), '♕' }, { (PieceType.King, Color.Black), '♔' },
     };
 
-
-    static void FillBoard(Piece[,] board) {
+    /// <summary>
+    /// Fill Board with starting pieces
+    /// </summary>
+    /// <param name="board"></param>
+    public static void FillBoard(Piece[,] board) {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 Piece piece = new Piece();
@@ -38,7 +41,11 @@ public static class Board {
     }
 
 
-
+    /// <summary>
+    /// Show board, different orientation depending on color
+    /// </summary>
+    /// <param name="board"></param>
+    /// <param name="color"></param>
     public static void ShowBoard(Piece[,] board, Color color) {
         if (color == Color.White) {
             for (int i = 7; i >= 0; i--) {
@@ -65,13 +72,5 @@ public static class Board {
                 Console.WriteLine();
             }
         }
-    }
-
-    public static Piece[,] CreateBoard() {
-        Piece[,] board = new Piece[8,8];
-
-        FillBoard(board);
-
-        return board;
     }
 }

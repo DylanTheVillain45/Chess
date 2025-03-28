@@ -1,9 +1,19 @@
 public class Game {
-    public void NewGame() {
+    public Dictionary<String, Move> MoveDictionary = new Dictionary<String, Move>();
+    public Piece[,] board = new Piece[8,8];
 
-        Piece[,] board = Board.CreateBoard();
-        Board.ShowBoard(board, Color.White);
-        // Board.ShowBoard(board, Color.Black);
+    /// <summary>
+    /// Game Loop
+    /// </summary>
+    public void NewGame() {
+        Board.FillBoard(board);
+        Color color = Color.White;
+        Board.ShowBoard(board, color);
+
+        while (true) {
+            Moves.GetMoves(this, color);
+            break;
+        }
 
 
     }
