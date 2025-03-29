@@ -47,8 +47,10 @@ public static class Board {
     /// <param name="board"></param>
     /// <param name="color"></param>
     public static void ShowBoard(Piece[,] board, Color color) {
+        Console.WriteLine("------------------------------");
         if (color == Color.White) {
             for (int i = 7; i >= 0; i--) {
+                Console.Write($"| {i + 1} |");
                 for (int j = 7; j >= 0; j--) {
                     if (board[i, j].type != PieceType.None) {
                         char unicodeChar = CharacterMap[(board[i, j].type, board[i, j].color)];
@@ -57,10 +59,13 @@ public static class Board {
                         Console.Write($" {chessSquares[1 - (i + j) % 2]} ");
                     }
                 }
+                Console.Write("|");
                 Console.WriteLine();
             }
+            Console.WriteLine("|---|-a--b--c--d--e--f--g--h-|");
         } else {
             for (int i = 0; i < 8; i++) {
+                Console.Write($" {i + 1} |");
                 for (int j = 0; j < 8; j++) {
                     if (board[i, j].type != PieceType.None) {
                         char unicodeChar = CharacterMap[(board[i, j].type, board[i, j].color)];
@@ -69,8 +74,16 @@ public static class Board {
                         Console.Write($" {chessSquares[1 - (i + j) % 2]} ");
                     }
                 }
+                Console.Write("|");
                 Console.WriteLine();
             }
+            Console.WriteLine("|---|-h--g--f--e--d--c--b--a-|");
+        }
+    }
+
+    public static void ShowMoves(Dictionary<string, Move> moveDictionary) {
+        foreach (var (moveNot, move) in moveDictionary) {
+            Console.WriteLine(moveNot);
         }
     }
 }

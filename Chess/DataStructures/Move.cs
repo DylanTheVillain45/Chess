@@ -10,6 +10,7 @@ public class Move {
 
     public bool isCapture;
     public bool isCheck; 
+    public bool isShortCastle;
     public bool isCastle;
     public bool isEnpassant;
     public bool isPromotion;
@@ -28,7 +29,7 @@ public class Move {
     /// <param name="isEnpassant"></param>
     /// <param name="isPromotion"></param>
     /// <param name="promotionPiece"></param>
-    public Move(PieceType piece, int startY, int startX, int endY, int endX, bool isCapture = false, PieceType capturedPiece = PieceType.None, bool isCheck = false, bool isCastle = false, bool isEnpassant = false, bool isPromotion = false, PieceType promotionPiece = PieceType.None) {
+    public Move(PieceType piece, int startY, int startX, int endY, int endX, bool isCapture = false, PieceType capturedPiece = PieceType.None, bool isCheck = false, bool isCastle = false, bool isShortCastle = false, bool isEnpassant = false, bool isPromotion = false, PieceType promotionPiece = PieceType.None) {
         this.startY = startY;
         this.startX = startX;
         this.endY = endY;
@@ -39,6 +40,7 @@ public class Move {
         this.capturedPiece = capturedPiece;
         this.isCheck = isCheck;
         this.isCastle = isCastle;
+        this.isShortCastle = isShortCastle;
         this.isEnpassant = isEnpassant;
         this.isPromotion = isPromotion;
         this.promotionPiece = promotionPiece;

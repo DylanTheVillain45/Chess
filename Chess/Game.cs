@@ -12,6 +12,7 @@ public class Game {
 
         while (true) {
             Moves.GetMoves(this, color);
+            Board.ShowMoves(MoveDictionary);
             break;
         }
 

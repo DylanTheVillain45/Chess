@@ -43,7 +43,7 @@ public class Piece {
                     Moves.AddMove(chess, newMove);
                 } else if (chess.board[newY, newX].type == PieceType.None && chess.board[posY, newX].type == PieceType.Pawn && chess.board[posY, newX].color != this.color) {
                     // Add check if last move was it
-                    Move newMove = new Move(this.type, posY, posX, newY, newX, true, PieceType.Pawn, false, false, true);
+                    Move newMove = new Move(this.type, posY, posX, newY, newX, true, PieceType.Pawn, false, false, false, true);
                     Moves.AddMove(chess, newMove);
                 }
             }

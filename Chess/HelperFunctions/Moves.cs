@@ -23,12 +23,15 @@ public static class Moves {
     }
 
     public static void AddMove(Game chess, Move move) {
+        string algebraicNotation = AlgebraicNotation.ToAlgebraicNotation(move, chess);
         // Console.WriteLine($"{move.piece} {move.startY} {move.startX} {move.endY} {move.endX}");
 
         // TODO : add check filtering and more logic
 
-        string algebraicNotation = AlgebraicNotation.ToAlgebraicNotation(move);
-        chess.MoveDictionary.Add(algebraicNotation, move);
+
+        if (chess.MoveDictionary.ContainsKey(algebraicNotation) == false) {
+            chess.MoveDictionary.Add(algebraicNotation, move);
+        }
     }
 
 }
