@@ -13,6 +13,10 @@ public static class AlgebraicNotation {
     /// <param name="move"></param>
     /// <returns></returns>
     public static string ToAlgebraicNotation(Move move, Game chess) {
+        if (move.isCastle == true) {
+            return move.isShortCastle ? "O-O" : "O-O-O";
+        }
+
         string algebraicNotation = "";
         char? piece = PieceName[move.piece];
         char row = RowMap[move.endX];
@@ -26,24 +30,51 @@ public static class AlgebraicNotation {
         char? promotion = move.isPromotion ? '=' : null;
         char? promotedPiece = move.isPromotion ? PieceName[move.promotionPiece] : null;
 
-        string disambiguate = DisambiguateMove(move, chess);
+        string disambiguate = "";
+        if (move.piece == PieceType.Knight || move.piece == PieceType.Bishop || move.piece == PieceType.Queen) {
+            disambiguate = DisambiguateMove(move, chess);
+        }
 
         algebraicNotation += $"{piece}{disambiguate}{pawnStartRow}{capture}{row}{col}{check}{promotion}{promotedPiece}";
 
-        if (move.isCastle == true) {
-            if (move.isShortCastle == true) {
-                algebraicNotation = "O-O";
-            } else {
-                algebraicNotation = "O-O-O";
-            }
-        }
 
         return algebraicNotation;
 
     }
 
     static string DisambiguateMove(Move move, Game chess) {
-        return "";
-    }
+        int? row = null;
+        int? col = null;
 
+        foreach (var (dx, dy, repeatable) in Moves.PieceMap[move.piece]) {
+            int newX = move.endX + dx;
+            int newY = move.endY + dy;
+
+            while (newX < 8 && newX >= 0 && newY < 8 && newY >= 0 && (newX != move.startX || newY != move.startY)) {
+                Piece landingSquare = chess.board[newY, newX];
+
+                if (landingSquare.type == move.piece) {
+                    if (newX != move.startX) {
+                        row = move.startX;
+                    } else {
+                        col = move.startY;
+                    }
+                }
+
+                if (landingSquare.type == PieceType.None && repeatable) {
+                    newY += dy;
+                    newX += dx;
+                }
+
+                else break;
+                }
+        }
+
+        char? rowChar = row != null ? RowMap[(int)row] : null;
+        int? colChar = col != null ? col + 1 : null;
+
+        
+
+        return $"{rowChar}{colChar}";
+    }
 }

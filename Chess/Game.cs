@@ -1,5 +1,6 @@
 public class Game {
     public Dictionary<String, Move> MoveDictionary = new Dictionary<String, Move>();
+    public List<(String, String)> PastMoves = new List<(string, string)>();
     public Piece[,] board = new Piece[8,8];
 
     /// <summary>
@@ -11,7 +12,7 @@ public class Game {
         Board.ShowBoard(board, color);
 
         while (true) {
-            Moves.GetMoves(this, color);
+            MoveGenerator.GetMoves(this, color);
             Board.ShowMoves(MoveDictionary);
             break;
         }
