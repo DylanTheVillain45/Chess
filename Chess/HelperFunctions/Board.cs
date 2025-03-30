@@ -15,10 +15,10 @@ public static class Board {
     /// Fill Board with starting pieces
     /// </summary>
     /// <param name="board"></param>
-    public static void FillBoard(Piece[,] board) {
+    public static void FillBoard(Piece?[,] board) {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                Piece piece = new Piece();
+                Piece? piece = new Piece();
                 if (i == 1 || i == 6) {
                     Color color = i == 1 ? Color.White : Color.Black;
                     piece.SetPiece(PieceType.Pawn, color, i, j);
@@ -33,7 +33,7 @@ public static class Board {
 
                     piece.SetPiece(pieceType, color, i, j);
                 } else {
-                    piece.SetPiece(PieceType.None, Color.None, i, j);
+                    piece = null;
                 }
                 board[i, j] = piece;
             }
@@ -46,44 +46,64 @@ public static class Board {
     /// </summary>
     /// <param name="board"></param>
     /// <param name="color"></param>
-    public static void ShowBoard(Piece[,] board, Color color) {
-        Console.WriteLine("------------------------------");
+    public static void ShowBoard(Piece?[,] board, Color color) {
+        Console.WriteLine("----------------------------");
         if (color == Color.White) {
             for (int i = 7; i >= 0; i--) {
-                Console.Write($"| {i + 1} |");
+                Console.Write($"{i + 1} ");
                 for (int j = 7; j >= 0; j--) {
-                    if (board[i, j].type != PieceType.None) {
-                        char unicodeChar = CharacterMap[(board[i, j].type, board[i, j].color)];
+                    Piece? piece = board[i, j];
+                    if (piece != null) {
+                        char unicodeChar = CharacterMap[(piece.type, piece.color)];
+                        // Console.Write($" {piece.type.ToString().ToCharArray()[0]}{piece.color.ToString().ToCharArray()[0]}{piece.posY}{piece.posX} ");
                         Console.Write($" {unicodeChar} ");
                     } else {
                         Console.Write($" {chessSquares[1 - (i + j) % 2]} ");
                     }
                 }
-                Console.Write("|");
+                Console.Write(" |");
                 Console.WriteLine();
             }
-            Console.WriteLine("|---|-a--b--c--d--e--f--g--h-|");
+            Console.WriteLine("---a--b--c--d--e--f--g--h---");
         } else {
             for (int i = 0; i < 8; i++) {
-                Console.Write($" {i + 1} |");
+                Console.Write($"{i + 1} ");
                 for (int j = 0; j < 8; j++) {
-                    if (board[i, j].type != PieceType.None) {
-                        char unicodeChar = CharacterMap[(board[i, j].type, board[i, j].color)];
+                    Piece? piece = board[i, j];
+                    if (piece != null) {
+                        char unicodeChar = CharacterMap[(piece.type, piece.color)];
+                        // Console.Write($" {piece.type.ToString().ToCharArray()[0]}{piece.color.ToString().ToCharArray()[0]}{piece.posY}{piece.posX} ");
                         Console.Write($" {unicodeChar} ");
                     } else {
                         Console.Write($" {chessSquares[1 - (i + j) % 2]} ");
                     }
                 }
-                Console.Write("|");
+                Console.Write(" |");
                 Console.WriteLine();
             }
-            Console.WriteLine("|---|-h--g--f--e--d--c--b--a-|");
+            Console.WriteLine("---h--g--f--e--d--c--b--a---");
         }
     }
 
     public static void ShowMoves(Dictionary<string, Move> moveDictionary) {
         foreach (var (moveNot, move) in moveDictionary) {
-            Console.WriteLine(moveNot);
+            Console.Write($"{moveNot}, ");
+        }
+        Console.WriteLine();
+    }
+
+    public static string GetPlayerMove(Game chess, bool canShow = true) {
+        while(true) {
+            string? move = Console.ReadLine();
+
+            if (move != null) {
+                if (chess.MoveDictionary.ContainsKey(move) || move == "end" || (move == "show" && canShow)) {
+                    return (string)move;
+                }
+                else {
+                    Console.WriteLine($"Try Again, {move} is not a vaild move");
+                }
+            }
         }
     }
 }

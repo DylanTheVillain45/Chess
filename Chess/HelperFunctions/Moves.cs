@@ -10,21 +10,30 @@ public static class Moves {
     
 
     public static void AddMove(Game chess, Move move) {
+        if (move.piece.color != chess.color) return;
         CommitMove(chess, move);
 
-        bool checkFilter = Check.CheckCheck(chess, move.pieceColor);
+        bool checkFilter = Check.CheckCheck(chess, move.piece.color);
 
-        if (checkFilter) return;
+        if (checkFilter) {
+            UnCommitMove(chess, move);
+            return;
+        } 
 
-        Color opponentColor = move.pieceColor == Color.White ? Color.Black : Color.White;
+        Color opponentColor = move.piece.color == Color.White ? Color.Black : Color.White;
+
         bool isCheck = Check.CheckCheck(chess, opponentColor);
 
         if (isCheck) {
-            Dictionary<String, Move> temp = chess.MoveDictionary;
-            MoveGenerator.GetMoves(chess, opponentColor);
+            Dictionary<string, Move> temp = chess.MoveDictionary;
+            chess.color = opponentColor;
+            MoveGenerator.GetMoves(chess);
             if (chess.MoveDictionary.Count == 0) {
                 move.isCheckMate = true;
+            } else {
+                move.isCheck = true;
             }
+            chess.color = move.piece.color;
             chess.MoveDictionary = temp;
         }
 
@@ -34,46 +43,40 @@ public static class Moves {
         string algebraicNotation = AlgebraicNotation.ToAlgebraicNotation(move, chess);
 
 
-        if (chess.MoveDictionary.ContainsKey(algebraicNotation) == false) {
+        if (chess.MoveDictionary.ContainsKey(algebraicNotation) == false && move.piece.color == chess.color) {
             chess.MoveDictionary.Add(algebraicNotation, move);
         }
     }
 
-    static void CommitMove(Game chess, Move move) {
-        Piece endSquare = chess.board[move.endY, move.endX];
-        Piece startSquare = chess.board[move.startY, move.startX];
+    public static void CommitMove(Game chess, Move move) {
+        move.piece.posY = move.endY;
+        move.piece.posX = move.endX;
 
-        startSquare.type = PieceType.None;
-        startSquare.color = Color.None;
-
-        endSquare.type = move.piece;
-        endSquare.color = move.pieceColor;
+        chess.board[move.endY, move.endX] = move.piece;
+        chess.board[move.startY, move.startX] = null;
 
         if (move.isEnpassant) {
-            chess.board[move.startY, move.endX].type = PieceType.None;
-            chess.board[move.startY, move.endX].color = Color.None;
+            chess.board[move.startY, move.endX] = null;
         }
     }
 
     static void UnCommitMove(Game chess, Move move) {
-        Piece endSquare = chess.board[move.endY, move.endX];
-        Piece startSquare = chess.board[move.startY, move.startX];
-        Color opponentColor = move.pieceColor == Color.White ? Color.Black : Color.White;
+        move.piece.posY = move.startY;
+        move.piece.posX = move.startX;
 
-        startSquare.type = move.piece;
-        startSquare.color = move.pieceColor;
+        chess.board[move.startY, move.startX] = move.piece;
 
-        endSquare.type = move.capturedPiece;
-        if (move.isCapture) endSquare.color = opponentColor;
-        else endSquare.color = Color.None;
-       
+        if (move.isCapture) {
+            if (move.isEnpassant) {
+                chess.board[move.startY, move.endX] = move.capturedPiece;
+            } else {
+                chess.board[move.endY, move.endX] = move.capturedPiece;
+            }
 
-        if (move.isEnpassant) {
-            chess.board[move.startY, move.endX].type = PieceType.Pawn;
-            chess.board[move.startY, move.endX].color = opponentColor;
-
-            endSquare.type = PieceType.None;
-            endSquare.color = Color.None;
         }
+                
+        else {
+            chess.board[move.endY, move.endX] = null;    
+        } 
     }
 }

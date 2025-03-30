@@ -1,6 +1,7 @@
-public enum PieceType {None, Pawn, Knight, Bishop, Rook, Queen, King};
-public enum Color {Black, White, None}
+using System.Diagnostics.CodeAnalysis;
 
+public enum PieceType { None, Pawn, Knight, Bishop, Rook, Queen, King};
+public enum Color {Black, White}
 public class Piece {
     public PieceType type;
     public Color color; 

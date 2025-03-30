@@ -4,29 +4,15 @@ public static class MoveGenerator {
     /// </summary>
     /// <param name="chess"></param>
     /// <param name="color"></param>
-    public static void GetMoves(Game chess, Color color) {
+    public static void GetMoves(Game chess) {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                if (chess.board[i, j].type != PieceType.None && chess.board[i, j].color == color) {
-                    GetPossibleMoves(chess, chess.board[i, j]);
+                Piece? piece = chess.board[i, j];
+                if (piece != null && piece.color == chess.color) {
+                    GetPossibleMoves(chess, piece);
                 }
             }
         }
-    }
-
-    static bool IsPawnCheck(Game chess, Color color, int pawnY, int pawnX, int direction) {
-        for (int i = -1; i <= 1; i += 2) {
-            int newY = pawnY + direction;
-            int newX = pawnX + i;
-            if (newX >= 0 && newX < 8 && newY >= 0 && newY < 8) {
-                if (chess.board[newY, newX].type == PieceType.King && chess.board[newY, newX].color != color) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-
     }
 
     static void GetPawnMove(Game chess, Piece piece) {
@@ -36,45 +22,27 @@ public static class MoveGenerator {
         // prevent out of range error
         if (piece.posY + direction < 0 || piece.posY + direction >= 8) return;
 
-        if (chess.board[piece.posY + direction, piece.posX].type == PieceType.None) {
-            Move newMove;
-            if (IsPawnCheck(chess, piece.color, piece.posY + direction, piece.posX, direction)) {
-                newMove = new Move(piece.type, piece.color, piece.posY, piece.posX, piece.posY + direction, piece.posX, false, PieceType.None, true);
-            } else {
-                newMove = new Move(piece.type, piece.color, piece.posY, piece.posX, piece.posY + direction, piece.posX);
-            }
+        if (chess.board[piece.posY + direction, piece.posX] == null) {
+            Move newMove = new Move(piece, piece.posY, piece.posX, piece.posY + direction, piece.posX);
             Moves.AddMove(chess, newMove);
-            if (piece.posY == startRow && chess.board[piece.posY + direction * 2, piece.posX].type == PieceType.None) {
-                Move newMove2;
-                if (IsPawnCheck(chess, piece.color, piece.posY + direction * 2, piece.posX, direction)) {
-                    newMove2 = new Move(piece.type, piece.color, piece.posY, piece.posX, piece.posY + direction * 2, piece.posX, false, PieceType.None, true);
-                } else {
-                    newMove2 = new Move(piece.type, piece.color, piece.posY, piece.posX, piece.posY + direction * 2, piece.posX);
-                }
+            if (piece.posY == startRow && chess.board[piece.posY + direction * 2, piece.posX] == null) {
+                Move newMove2 = new Move(piece, piece.posY, piece.posX, piece.posY + direction * 2, piece.posX);
                 Moves.AddMove(chess, newMove2);
             }
         }
          
-        for (int dx = -1 ; dx <= 1; dx++) {
+        for (int dx = -1 ; dx <= 1; dx += 2) {
             int newY = piece.posY + direction;
             int newX = piece.posX + dx;
             if (newX >= 0 && newX < 8) {
-                if (chess.board[newY, newX].type != PieceType.None && chess.board[newY, newX].color != piece.color) {
-                    Move newMove;
-                    if (IsPawnCheck(chess, piece.color, newY, newX, direction)) {
-                        newMove = new Move(piece.type, piece.color, piece.posY, piece.posX, newY, newX, true, chess.board[newY, newX].type, true);
-                    } else {
-                        newMove = new Move(piece.type, piece.color, piece.posY, piece.posX, newY, newX, true, chess.board[newY, newX].type);
-                    }
+                Piece? capturedPiece = chess.board[newY, newX];
+                Piece? enPassantCapturePiece = chess.board[piece.posY, newX];
+                if (capturedPiece != null && capturedPiece.color != piece.color) {
+                    Move newMove = new Move(piece, piece.posY, piece.posX, newY, newX, true, capturedPiece);
                     Moves.AddMove(chess, newMove);
-                } else if (chess.board[newY, newX].type == PieceType.None && chess.board[piece.posY, newX].type == PieceType.Pawn && chess.board[piece.posY, newX].color != piece.color) {
+                } else if (capturedPiece == null && enPassantCapturePiece != null && enPassantCapturePiece.type == PieceType.Pawn && enPassantCapturePiece.color != piece.color) {
                     // Add check if last move was it
-                    Move newMove;
-                    if (IsPawnCheck(chess, piece.color, newY, newX, direction)) {
-                        newMove = new Move(piece.type, piece.color, piece.posY, piece.posX, newY, newX, true, chess.board[newY, newX].type, true, false, false, true);
-                    } else {
-                        newMove = new Move(piece.type, piece.color, piece.posY, piece.posX, newY, newX, true, chess.board[newY, newX].type, false, false, false, true);
-                    }
+                    Move newMove = new Move(piece, piece.posY, piece.posX, newY, newX, true, enPassantCapturePiece, false, false, false, true);
                     Moves.AddMove(chess, newMove);
                 }
             }
@@ -87,15 +55,15 @@ public static class MoveGenerator {
             int newY = piece.posY + dy;
 
             while (newX < 8 && newX >= 0 && newY < 8 && newY >= 0) {
-                Piece landingSquare = chess.board[newY, newX];
+                Piece? landingSquare = chess.board[newY, newX];
 
-                if (landingSquare.type == PieceType.None) {
-                    Move newMove = new Move(piece.type, piece.color, piece.posY, piece.posX, newY, newX);
+                if (landingSquare == null) {
+                    Move newMove = new Move(piece, piece.posY, piece.posX, newY, newX);
                     Moves.AddMove(chess, newMove);
                 }
 
                 else if (landingSquare.color != piece.color) {
-                    Move newMove = new Move(piece.type, piece.color, piece.posY, piece.posX, newY, newX, true, landingSquare.type);
+                    Move newMove = new Move(piece, piece.posY, piece.posX, newY, newX, true, landingSquare);
                     Moves.AddMove(chess, newMove);
                     break;
                 }
@@ -115,9 +83,11 @@ public static class MoveGenerator {
     }
 
     static public void GetPossibleMoves(Game chess, Piece piece) {
+        if (piece.color != chess.color) return;
+
         if (piece.type == PieceType.King) GetCastleMove(chess, piece);
         if (piece.type == PieceType.Pawn) GetPawnMove(chess, piece);
-        else GetNonPawnMoves(chess, piece);
+        if (piece.type != PieceType.Pawn) GetNonPawnMoves(chess, piece);
     }
 
 }
