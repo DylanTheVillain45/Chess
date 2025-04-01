@@ -2,7 +2,7 @@ public static class AlgebraicNotation {
     static readonly Dictionary<PieceType, char?> PieceName = new Dictionary<PieceType, char?> {
         {PieceType.Pawn, null}, {PieceType.Knight, 'N'}, {PieceType.Bishop, 'B'}, {PieceType.Rook, 'R'}, {PieceType.Queen, 'Q'}, {PieceType.King, 'K'}
     };
-    static readonly Dictionary<int, char> RowMap = new Dictionary<int, char> {
+    public static readonly Dictionary<int, char> RowMap = new Dictionary<int, char> {
         {0, 'h'}, {1, 'g'}, {2, 'f'}, {3, 'e'}, {4, 'd'}, {5, 'c'}, {6, 'b'}, {7, 'a'}
     };
 

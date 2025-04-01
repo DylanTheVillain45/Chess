@@ -17,7 +17,7 @@ public class Game {
             Board.ShowBoard(board, color);
             Console.WriteLine();
             MoveDictionary.Clear();
-            MoveGenerator.GetMoves(this);
+            MoveGenerator.GetMoves(this, color);
 
             string playerNotationMove = Board.GetPlayerMove(this);
             if (playerNotationMove == "show") {
@@ -27,10 +27,13 @@ public class Game {
             if (playerNotationMove == "end") break;
 
             Moves.CommitMove(this, MoveDictionary[playerNotationMove]);
+            if (color == Color.White) {
+                PastMoves.Add((playerNotationMove, ""));
+            } else {
+                PastMoves[PastMoves.Count - 1] = (PastMoves[PastMoves.Count - 1].Item1, playerNotationMove);
+            }
 
             color = color == Color.White ? Color.Black : Color.White;
-            MoveDictionary = new Dictionary<string, Move>();
-            Console.ReadLine();
         }
     }
 }

@@ -10,7 +10,6 @@ public static class Moves {
     
 
     public static void AddMove(Game chess, Move move) {
-        if (move.piece.color != chess.color) return;
         CommitMove(chess, move);
 
         bool checkFilter = Check.CheckCheck(chess, move.piece.color);
@@ -26,14 +25,12 @@ public static class Moves {
 
         if (isCheck) {
             Dictionary<string, Move> temp = chess.MoveDictionary;
-            chess.color = opponentColor;
-            MoveGenerator.GetMoves(chess);
+            MoveGenerator.GetMoves(chess, opponentColor);
             if (chess.MoveDictionary.Count == 0) {
                 move.isCheckMate = true;
             } else {
                 move.isCheck = true;
             }
-            chess.color = move.piece.color;
             chess.MoveDictionary = temp;
         }
 
@@ -55,6 +52,18 @@ public static class Moves {
         chess.board[move.endY, move.endX] = move.piece;
         chess.board[move.startY, move.startX] = null;
 
+        if (move.isCastle) {
+            int rookStartX = move.isShortCastle ? 0 : 7;
+            int rookEndX = move.isShortCastle ? 2 : 4; 
+
+            Piece? rook = chess.board[move.startY, rookStartX];
+            if (rook != null && rook.type == PieceType.Rook) {
+                rook.posX = rookEndX;
+                chess.board[move.startY, rookEndX] = rook;
+                chess.board[move.startY, rookStartX] = null;
+            }
+        }
+
         if (move.isEnpassant) {
             chess.board[move.startY, move.endX] = null;
         }
@@ -65,6 +74,18 @@ public static class Moves {
         move.piece.posX = move.startX;
 
         chess.board[move.startY, move.startX] = move.piece;
+
+        if (move.isCastle) {
+            int rookStartX = move.isShortCastle ? 0 : 7;
+            int rookEndX = move.isShortCastle ? 2 : 4; 
+
+            Piece? rook = chess.board[move.startY, rookEndX];
+            if (rook != null && rook.type == PieceType.Rook) {
+                rook.posX = rookStartX;
+                chess.board[move.startY, rookStartX] = rook;
+                chess.board[move.startY, rookEndX] = null;
+            }
+        }
 
         if (move.isCapture) {
             if (move.isEnpassant) {
