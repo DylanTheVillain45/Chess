@@ -32,7 +32,7 @@ public class Move {
     /// <param name="isEnpassant"></param>
     /// <param name="isPromotion"></param>
     /// <param name="promotionPiece"></param>
-    public Move(Piece piece, int startY, int startX, int endY, int endX, bool isCapture = false, Piece? capturedPiece = null, bool isCheck = false, bool isCastle = false, bool isShortCastle = false, bool isEnpassant = false, bool isPromotion = false, PieceType promotionPiece = PieceType.None) {
+    public Move(Piece piece, int startY, int startX, int endY, int endX, bool isCapture = false, Piece? capturedPiece = null, bool isCheck = false, bool isShortCastle = false, bool isEnpassant = false, bool isPromotion = false, PieceType promotionPiece = PieceType.None) {
         this.startY = startY;
         this.startX = startX;
         this.endY = endY;
@@ -43,7 +43,6 @@ public class Move {
         this.isCapture = isCapture;
         this.capturedPiece = capturedPiece;
         this.isCheck = isCheck;
-        this.isCastle = isCastle;
         this.isShortCastle = isShortCastle;
         this.isEnpassant = isEnpassant;
         this.isPromotion = isPromotion;

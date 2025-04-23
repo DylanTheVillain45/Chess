@@ -50,6 +50,7 @@ public static class Moves {
         move.piece.posX = move.endX;
 
         chess.board[move.endY, move.endX] = move.piece;
+        if (move.isPromotion) move.piece.type = move.promotionPiece;
         chess.board[move.startY, move.startX] = null;
 
         if (move.isCastle) {
@@ -73,6 +74,7 @@ public static class Moves {
         move.piece.posY = move.startY;
         move.piece.posX = move.startX;
 
+        if (move.isPromotion) move.piece.type = PieceType.Pawn;
         chess.board[move.startY, move.startX] = move.piece;
 
         if (move.isCastle) {

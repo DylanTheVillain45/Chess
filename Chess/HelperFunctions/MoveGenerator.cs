@@ -1,4 +1,5 @@
 public static class MoveGenerator {
+    static readonly PieceType[] promotablePieces = [PieceType.King, PieceType.Bishop, PieceType.Rook, PieceType.Queen];
     /// <summary>
     /// Call Get Moves For All Pieces of a Color
     /// </summary>
@@ -33,13 +34,23 @@ public static class MoveGenerator {
     static void GetPawnMove(Game chess, Piece piece) {
         int direction = piece.color == Color.White ? 1 : -1;
         int startRow = piece.color == Color.White ? 1 : 6;
+        int enPassantRow = piece.color == Color.White ? 5 : 4;
+        int endRow = piece.color == Color.White ? 7 : 0;
 
         // prevent out of range error
         if (piece.posY + direction < 0 || piece.posY + direction >= 8) return;
 
         if (chess.board[piece.posY + direction, piece.posX] == null) {
-            Move newMove = new Move(piece, piece.posY, piece.posX, piece.posY + direction, piece.posX);
-            Moves.AddMove(chess, newMove);
+            if (piece.posY == endRow) {
+                for (int i = 0; i < promotablePieces.Length; i++) {
+                    Move newMove = new Move(piece, piece.posY, piece.posX, piece.posY + direction, piece.posX, false, null, false, false, false, true, promotablePieces[i]);
+                    Moves.AddMove(chess, newMove);
+                }
+            } else {
+                Move newMove = new Move(piece, piece.posY, piece.posX, piece.posY + direction, piece.posX);
+                Moves.AddMove(chess, newMove);
+            }
+
             if (piece.posY == startRow && chess.board[piece.posY + direction * 2, piece.posX] == null) {
                 Move newMove2 = new Move(piece, piece.posY, piece.posX, piece.posY + direction * 2, piece.posX);
                 Moves.AddMove(chess, newMove2);
@@ -53,11 +64,18 @@ public static class MoveGenerator {
                 Piece? capturedPiece = chess.board[newY, newX];
                 Piece? enPassantCapturePiece = chess.board[piece.posY, newX];
                 if (capturedPiece != null && capturedPiece.color != piece.color) {
-                    Move newMove = new Move(piece, piece.posY, piece.posX, newY, newX, true, capturedPiece);
-                    Moves.AddMove(chess, newMove);
-                } else if (capturedPiece == null && enPassantCapturePiece != null && enPassantCapturePiece.type == PieceType.Pawn && enPassantCapturePiece.color != piece.color) {
+                    if (piece.posY == endRow) {
+                        for (int i = 0; i < promotablePieces.Length; i++) {
+                            Move newMove = new Move(piece, piece.posY, piece.posX, piece.posY + direction, piece.posX, true, capturedPiece, false, false, false, true, promotablePieces[i]);
+                            Moves.AddMove(chess, newMove);
+                        }
+                    } else {
+                        Move newMove = new Move(piece, piece.posY, piece.posX, newY, newX, true, capturedPiece);
+                        Moves.AddMove(chess, newMove);
+                    }
+                } else if (capturedPiece == null && enPassantCapturePiece != null && enPassantCapturePiece.type == PieceType.Pawn && enPassantCapturePiece.color != piece.color && piece.posY == enPassantRow) {
                     if (isValidEnPassant(chess, piece, newX, direction)) {
-                        Move newMove = new Move(piece, piece.posY, piece.posX, newY, newX, true, enPassantCapturePiece, false, false, false, true);
+                        Move newMove = new Move(piece, piece.posY, piece.posX, newY, newX, true, enPassantCapturePiece, false, false, true);
                         Moves.AddMove(chess, newMove);
                     }
                 }
@@ -111,7 +129,7 @@ public static class MoveGenerator {
         if (rookShort != null && rookShort.type == PieceType.Rook && !HasMoved(chess, rookShort)) {
             if (IsPathClear(chess, king, true)) {
                 if (IsSafeForKing(chess, king, new int[] {2, 1})) {
-                    Move newMove = new Move(king, king.posY, king.posX, king.posY, king.posX - 2, false, null, false, true, true);
+                    Move newMove = new Move(king, king.posY, king.posX, king.posY, king.posX - 2, false, null, true, true);
                     Moves.AddMove(chess, newMove);
                 }
             }
@@ -121,7 +139,7 @@ public static class MoveGenerator {
         if (rookLong != null && rookLong.type == PieceType.Rook && !HasMoved(chess, rookLong)) {
             if (IsPathClear(chess, king, false)) {
                 if (IsSafeForKing(chess, king, new int[] {4, 5})) {
-                    Move newMove = new Move(king, king.posY, king.posX, king.posY, king.posX - 2, false, null, false, true, false);
+                    Move newMove = new Move(king, king.posY, king.posX, king.posY, king.posX - 2, false, null, true, false);
                     Moves.AddMove(chess, newMove);
                 }
             }
