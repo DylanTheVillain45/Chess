@@ -128,8 +128,8 @@ public static class MoveGenerator {
         Piece? rookShort = chess.board[y, 0];
         if (rookShort != null && rookShort.type == PieceType.Rook && !HasMoved(chess, rookShort)) {
             if (IsPathClear(chess, king, true)) {
-                if (IsSafeForKing(chess, king, new int[] {2, 1})) {
-                    Move newMove = new Move(king, king.posY, king.posX, king.posY, king.posX - 2, false, null, true, true);
+                if (IsSafeForKing(chess, king, new int[] {5, 6})) {
+                    Move newMove = new Move(king, king.posY, king.posX, king.posY, king.posX + 2, false, null, true, true);
                     Moves.AddMove(chess, newMove);
                 }
             }
@@ -138,7 +138,7 @@ public static class MoveGenerator {
         Piece? rookLong = chess.board[y, 7];
         if (rookLong != null && rookLong.type == PieceType.Rook && !HasMoved(chess, rookLong)) {
             if (IsPathClear(chess, king, false)) {
-                if (IsSafeForKing(chess, king, new int[] {4, 5})) {
+                if (IsSafeForKing(chess, king, new int[] {3, 2})) {
                     Move newMove = new Move(king, king.posY, king.posX, king.posY, king.posX - 2, false, null, true, false);
                     Moves.AddMove(chess, newMove);
                 }
@@ -166,7 +166,7 @@ public static class MoveGenerator {
 
             return true;
         } else {
-            for (int i = 1; i <= 2; i++) {
+            for (int i = 1; i <= 3; i++) {
                 int x = king.posX + i;
                 if (x < 0 || x > 7) return false;
                 if (chess.board[king.posY, king.posX + i] != null) return false;

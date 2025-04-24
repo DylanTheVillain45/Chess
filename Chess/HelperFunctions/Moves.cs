@@ -54,8 +54,8 @@ public static class Moves {
         chess.board[move.startY, move.startX] = null;
 
         if (move.isCastle) {
-            int rookStartX = move.isShortCastle ? 0 : 7;
-            int rookEndX = move.isShortCastle ? 2 : 4; 
+            int rookStartX = move.isShortCastle ? 7 : 0;
+            int rookEndX = move.isShortCastle ? 5 : 3; 
 
             Piece? rook = chess.board[move.startY, rookStartX];
             if (rook != null && rook.type == PieceType.Rook) {
@@ -78,8 +78,8 @@ public static class Moves {
         chess.board[move.startY, move.startX] = move.piece;
 
         if (move.isCastle) {
-            int rookStartX = move.isShortCastle ? 0 : 7;
-            int rookEndX = move.isShortCastle ? 2 : 4; 
+            int rookStartX = move.isShortCastle ? 7 : 0;
+            int rookEndX = move.isShortCastle ? 5 : 3; 
 
             Piece? rook = chess.board[move.startY, rookEndX];
             if (rook != null && rook.type == PieceType.Rook) {
